@@ -1,12 +1,11 @@
 import { ThemedText } from "@/components/themed-text";
-import { Colors } from "@/constants/theme";
+import { BorderRadius, Colors, Spacing, Typography } from "@/constants/theme";
 import { useAuth } from "@/contexts/AuthContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { Ionicons } from "@expo/vector-icons";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { LinearGradient } from "expo-linear-gradient";
+import { Formik } from "formik";
 import React from "react";
-import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   Alert,
@@ -18,32 +17,34 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import * as z from "zod";
+import * as Yup from "yup";
 
-const loginSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+const loginSchema = Yup.object().shape({
+  username: Yup.string()
+    .min(3, "Username must be at least 3 characters")
+    .required("Username is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
 });
 
 export default function LoginScreen() {
-  const { login, isLoading } = useAuth();
+  const { login } = useAuth();
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
 
-  // Forms
-  const loginForm = useForm({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { username: "", password: "" },
-  });
-
-  const onLogin = async (data: z.infer<typeof loginSchema>) => {
+  const handleLogin = async (
+    values: { username: string; password: string },
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void },
+  ) => {
     try {
-      await login(data);
-      // Navigation is handled in AuthContext upon success
+      await login(values);
     } catch (error: any) {
       const msg =
         error.response?.data?.detail || "Please check your credentials";
       Alert.alert("Login Failed", msg);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -86,11 +87,21 @@ export default function LoginScreen() {
             </ThemedText>
           </View>
 
-          <View style={styles.form}>
-            <Controller
-              control={loginForm.control}
-              name="username"
-              render={({ field: { onChange, value } }) => (
+          <Formik
+            initialValues={{ username: "", password: "" }}
+            validationSchema={loginSchema}
+            onSubmit={handleLogin}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+              isSubmitting,
+            }) => (
+              <View style={styles.form}>
                 <View style={styles.inputGroup}>
                   <ThemedText
                     style={[styles.label, { color: theme.textSecondary }]}
@@ -101,7 +112,10 @@ export default function LoginScreen() {
                     style={[
                       styles.inputContainer,
                       {
-                        borderColor: theme.border,
+                        borderColor:
+                          touched.username && errors.username
+                            ? theme.error
+                            : theme.border,
                         backgroundColor: theme.background,
                       },
                     ]}
@@ -116,19 +130,19 @@ export default function LoginScreen() {
                       style={[styles.input, { color: theme.text }]}
                       placeholder="Enter username"
                       placeholderTextColor={theme.icon}
-                      value={value}
-                      onChangeText={onChange}
+                      value={values.username}
+                      onChangeText={handleChange("username")}
+                      onBlur={handleBlur("username")}
                       autoCapitalize="none"
                     />
                   </View>
+                  {touched.username && errors.username && (
+                    <ThemedText style={{ color: theme.error, fontSize: 12 }}>
+                      {errors.username}
+                    </ThemedText>
+                  )}
                 </View>
-              )}
-            />
 
-            <Controller
-              control={loginForm.control}
-              name="password"
-              render={({ field: { onChange, value } }) => (
                 <View style={styles.inputGroup}>
                   <ThemedText
                     style={[styles.label, { color: theme.textSecondary }]}
@@ -139,7 +153,10 @@ export default function LoginScreen() {
                     style={[
                       styles.inputContainer,
                       {
-                        borderColor: theme.border,
+                        borderColor:
+                          touched.password && errors.password
+                            ? theme.error
+                            : theme.border,
                         backgroundColor: theme.background,
                       },
                     ]}
@@ -154,30 +171,41 @@ export default function LoginScreen() {
                       style={[styles.input, { color: theme.text }]}
                       placeholder="Enter password"
                       placeholderTextColor={theme.icon}
-                      value={value}
-                      onChangeText={onChange}
+                      value={values.password}
+                      onChangeText={handleChange("password")}
+                      onBlur={handleBlur("password")}
                       secureTextEntry
                     />
                   </View>
+                  {touched.password && errors.password && (
+                    <ThemedText style={{ color: theme.error, fontSize: 12 }}>
+                      {errors.password}
+                    </ThemedText>
+                  )}
                 </View>
-              )}
-            />
 
-            <TouchableOpacity
-              style={[
-                styles.loginButton,
-                { backgroundColor: theme.primary, shadowColor: theme.primary },
-              ]}
-              onPress={loginForm.handleSubmit(onLogin)}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <ThemedText style={styles.loginButtonText}>Sign In</ThemedText>
-              )}
-            </TouchableOpacity>
-          </View>
+                <TouchableOpacity
+                  style={[
+                    styles.loginButton,
+                    {
+                      backgroundColor: theme.primary,
+                      shadowColor: theme.primary,
+                    },
+                  ]}
+                  onPress={() => handleSubmit()}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <ThemedText style={styles.loginButtonText}>
+                      Sign In
+                    </ThemedText>
+                  )}
+                </TouchableOpacity>
+              </View>
+            )}
+          </Formik>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -191,11 +219,11 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: "center",
-    padding: 24,
+    padding: Spacing.l,
   },
   card: {
-    borderRadius: 24,
-    padding: 32,
+    borderRadius: BorderRadius.l,
+    padding: Spacing.xl,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
     shadowRadius: 20,
@@ -203,33 +231,33 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginBottom: 32,
+    marginBottom: Spacing.xl,
   },
   iconContainer: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: BorderRadius.round,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: Spacing.m,
   },
   title: {
-    fontSize: 28,
+    fontSize: Typography.sizes.xl,
     fontWeight: "bold",
-    marginBottom: 8,
+    marginBottom: Spacing.s,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: Typography.sizes.s,
     textAlign: "center",
   },
   form: {
-    gap: 20,
+    gap: Spacing.l,
   },
   inputGroup: {
-    gap: 8,
+    gap: Spacing.s,
   },
   label: {
-    fontSize: 14,
+    fontSize: Typography.sizes.s,
     fontWeight: "600",
     marginLeft: 4,
   },
@@ -237,24 +265,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderRadius: 16,
+    borderRadius: BorderRadius.xl,
     height: 56,
-    paddingHorizontal: 16,
+    paddingHorizontal: Spacing.m,
   },
   inputIcon: {
     marginRight: 12,
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    fontSize: Typography.sizes.m,
     height: "100%",
   },
   loginButton: {
     height: 56,
-    borderRadius: 16,
+    borderRadius: BorderRadius.xl,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 12,
+    marginTop: Spacing.s,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -262,7 +290,7 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: Typography.sizes.m,
     fontWeight: "bold",
   },
 });
