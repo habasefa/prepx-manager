@@ -2,6 +2,7 @@ import { ThemedText } from "@/components/themed-text";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { MonthlyRevenueOut } from "@/services/analytics.service";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { LineChart } from "react-native-gifted-charts";
@@ -46,26 +47,33 @@ export function MonthGrowthChart({ data }: MonthGrowthChartProps) {
     "Dec",
   ];
 
-  // Calculate Growth
-  const growthData = [];
+  // Calculate Avg Growth for Footer
   let totalGrowth = 0;
-
   for (let i = 1; i < data.length; i++) {
     const current = data[i].revenue;
     const previous = data[i - 1].revenue;
     const growth = previous === 0 ? 0 : ((current - previous) / previous) * 100;
-
-    growthData.push({
-      value: growth,
-      label: monthNames[data[i].month] || String(data[i].month),
-      dataPointText: `${growth.toFixed(1)}%`,
-      textColor: theme.textSecondary,
-    });
     totalGrowth += growth;
   }
-
-  const avgGrowth = totalGrowth / growthData.length;
+  const avgGrowth = totalGrowth / (data.length - 1);
   const isPositive = avgGrowth >= 0;
+
+  // Prepare Chart Data (Revenue)
+  const chartData = data.map((item) => ({
+    value: item.revenue,
+    label: monthNames[item.month],
+    labelTextStyle: { color: theme.textSecondary, fontSize: 10 },
+  }));
+
+  // Calculate card width accounting for margins and padding
+  // Screen padding (approx 16-20px each side) + Card padding (24px each side)
+  const cardWidth = screenWidth - 88;
+
+  const formatYLabel = (value: string) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return value;
+    return `${(num / 1000).toFixed(1)}k ETB`;
+  };
 
   return (
     <View
@@ -74,62 +82,44 @@ export function MonthGrowthChart({ data }: MonthGrowthChartProps) {
         { backgroundColor: theme.card, shadowColor: theme.text },
       ]}
     >
-      <View style={styles.header}>
-        <ThemedText type="subtitle" style={styles.title}>
-          MoM Growth
-        </ThemedText>
-        <View
-          style={[
-            styles.badge,
-            { backgroundColor: isPositive ? "#DCFCE7" : "#FEE2E2" },
-          ]}
-        >
-          <ThemedText
-            style={{
-              color: isPositive ? "#166534" : "#991B1B",
-              fontWeight: "bold",
-              fontSize: 12,
-            }}
-          >
-            Avg: {avgGrowth > 0 ? "+" : ""}
-            {avgGrowth.toFixed(1)}%
-          </ThemedText>
-        </View>
-      </View>
+      <ThemedText type="subtitle" style={styles.title}>
+        Month to Month Growth
+      </ThemedText>
 
-      <View style={{ overflow: "hidden" }}>
+      <View style={{ marginVertical: 20, alignItems: "center" }}>
         <LineChart
-          data={growthData}
-          color={isPositive ? theme.primary : "#EF4444"}
-          thickness={3}
-          dataPointsColor={isPositive ? theme.primary : "#EF4444"}
-          textColor={theme.textSecondary}
-          xAxisColor={theme.border}
-          yAxisColor={theme.border}
-          yAxisTextStyle={{ color: theme.textSecondary, fontSize: 10 }}
+          data={chartData}
+          color="#F97316"
+          thickness={2}
+          hideDataPoints
+          initialSpacing={20}
+          endSpacing={20}
+          hideRules={false}
+          rulesType="solid"
+          rulesColor={theme.border + "40"} // Transparent border
+          yAxisThickness={0}
+          xAxisThickness={0}
+          yAxisTextStyle={{
+            color: theme.textSecondary,
+            fontSize: 10,
+          }}
+          formatYLabel={formatYLabel}
           xAxisLabelTextStyle={{
             color: theme.textSecondary,
             fontSize: 10,
           }}
-          startFillColor={isPositive ? theme.primary : "#EF4444"}
-          endFillColor={isPositive ? theme.primary : "#EF4444"}
-          startOpacity={0.2}
-          endOpacity={0.05}
-          areaChart
-          width={screenWidth - 80}
-          height={50}
-          curved
+          width={cardWidth}
+          height={180}
+          curved={false}
           isAnimated
-          hideRules
-          scrollToEnd
-          initialSpacing={10}
-          endSpacing={10}
+          showVerticalLines={false}
+          adjustToWidth={false} // Disable auto adjust to strictly respect width
           pointerConfig={{
             pointerStripHeight: 160,
             pointerStripColor: theme.textSecondary,
             pointerStripWidth: 2,
-            pointerColor: theme.textSecondary,
-            radius: 6,
+            pointerColor: "#F97316",
+            radius: 4,
             pointerLabelWidth: 100,
             pointerLabelHeight: 90,
             activatePointersOnLongPress: true,
@@ -145,17 +135,6 @@ export function MonthGrowthChart({ data }: MonthGrowthChartProps) {
                     marginLeft: -40,
                   }}
                 >
-                  <ThemedText
-                    style={{
-                      color: theme.textSecondary,
-                      fontSize: 14,
-                      marginBottom: 6,
-                      textAlign: "center",
-                    }}
-                  >
-                    {items[0].date}
-                  </ThemedText>
-
                   <View
                     style={{
                       paddingHorizontal: 14,
@@ -169,7 +148,7 @@ export function MonthGrowthChart({ data }: MonthGrowthChartProps) {
                     <ThemedText
                       style={{ fontWeight: "bold", textAlign: "center" }}
                     >
-                      {items[0].value.toFixed(1)}%
+                      {items[0].value.toFixed(0)} ETB
                     </ThemedText>
                   </View>
                 </View>
@@ -177,6 +156,33 @@ export function MonthGrowthChart({ data }: MonthGrowthChartProps) {
             },
           }}
         />
+      </View>
+
+      <View style={styles.footer}>
+        <View style={styles.statRow}>
+          <ThemedText
+            style={[styles.statLabel, { color: theme.textSecondary }]}
+          >
+            Avg monthly growth:
+          </ThemedText>
+          <ThemedText
+            style={[
+              styles.statValue,
+              { color: isPositive ? "#166534" : "#EF4444" },
+            ]}
+          >
+            {avgGrowth.toFixed(1)}%
+          </ThemedText>
+          <Ionicons
+            name={isPositive ? "arrow-up" : "arrow-down"}
+            size={12}
+            color={isPositive ? "#166534" : "#EF4444"}
+            style={{ marginLeft: 2 }}
+          />
+        </View>
+        <ThemedText style={{ color: theme.textSecondary, fontSize: 12 }}>
+          Showing revenue growth for 2025
+        </ThemedText>
       </View>
     </View>
   );
@@ -192,19 +198,25 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 2,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
   title: {
     fontSize: 18,
     fontWeight: "bold",
+    marginBottom: 0,
   },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+  footer: {
+    marginTop: 10,
+  },
+  statRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 14,
+  },
+  statValue: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginLeft: 4,
   },
 });
