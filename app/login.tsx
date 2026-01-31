@@ -242,8 +242,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.m,
   },
   title: {
+    // handled by type="title" in ThemedText but overriding here requires care
     fontSize: Typography.sizes.xl,
-    fontWeight: "bold",
     marginBottom: Spacing.s,
   },
   subtitle: {
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: Typography.sizes.s,
-    fontWeight: "600",
+    fontFamily: Typography.families.bodyMedium, // Use explicit font
     marginLeft: 4,
   },
   inputContainer: {
@@ -275,6 +275,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: Typography.sizes.m,
+    fontFamily: Typography.families.body, // Input needs explicit font
     height: "100%",
   },
   loginButton: {
@@ -291,6 +292,6 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: "#fff",
     fontSize: Typography.sizes.m,
-    fontWeight: "bold",
+    fontFamily: Typography.families.bodyMedium,
   },
 });

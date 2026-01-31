@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/themed-text";
-import { Colors } from "@/constants/theme";
+import { Colors, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { SummaryOut } from "@/services/analytics.service";
 import { Ionicons } from "@expo/vector-icons";
@@ -40,29 +40,29 @@ export function OverviewCards({ data, loading }: OverviewCardsProps) {
       label: "Total Students",
       value: data.students.toString(),
       icon: "people",
-      color: "#3B82F6", // Blue
-      bg: "#EFF6FF",
+      color: theme.card1.fg,
+      bg: theme.card1.bg, // Amber
     },
     {
       label: "Subscribers",
       value: data.subscribers.toString(),
       icon: "star",
-      color: "#F59E0B", // Amber
-      bg: "#FFFBEB",
+      color: theme.card4.fg, // Darker Amber
+      bg: theme.card4.bg, // Light Amber
     },
     {
       label: "Total Revenue",
       value: `$${data.totalRevenue.toLocaleString()}`,
       icon: "cash",
-      color: "#10B981", // Emerald
-      bg: "#ECFDF5",
+      color: theme.card2.fg, // Black
+      bg: theme.card2.bg, // Gray
     },
     {
       label: "This Month",
       value: `$${data.currentMonthRevenue.toLocaleString()}`,
       icon: "trending-up",
-      color: "#8B5CF6", // Violet
-      bg: "#F5F3FF",
+      color: theme.card3.fg, // Dark Gray
+      bg: theme.card3.bg, // White
     },
   ];
 
@@ -135,13 +135,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   value: {
+    fontFamily: Typography.families.headingBold,
     fontSize: 22,
-    fontWeight: "bold",
     marginBottom: 4,
     letterSpacing: -0.5,
   },
   label: {
+    fontFamily: Typography.families.bodyMedium,
     fontSize: 13,
-    fontWeight: "500",
   },
 });

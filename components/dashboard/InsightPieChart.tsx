@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/themed-text";
-import { Colors } from "@/constants/theme";
+import { Colors, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { RegionKpiOut } from "@/services/analytics.service";
 import React from "react";
@@ -133,9 +133,9 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   title: {
+    fontFamily: Typography.families.headingBold,
     marginBottom: 24,
     fontSize: 18,
-    fontWeight: "bold",
   },
   chartRow: {
     flexDirection: "row",
@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   legendText: {
+    fontFamily: Typography.families.body,
     fontSize: 12,
   },
 });

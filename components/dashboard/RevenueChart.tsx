@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/themed-text";
-import { Colors } from "@/constants/theme";
+import { Colors, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { MonthlyRevenueOut } from "@/services/analytics.service";
 import React from "react";
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
+    fontFamily: Typography.families.headingBold,
     fontSize: 18,
-    fontWeight: "bold",
   },
 });

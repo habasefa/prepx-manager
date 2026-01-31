@@ -1,7 +1,39 @@
 import { Platform } from "react-native";
 
-const tintColorLight = "#F59E0B"; // Amber-500
-const tintColorDark = "#FCD34D"; // Amber-300
+// --- 0. Palettes ---
+
+// Brand: Amber
+const Amber = {
+  50: "#FFFBEB",
+  100: "#FEF3C7",
+  200: "#FDE68A",
+  300: "#FCD34D",
+  400: "#FBBF24",
+  500: "#F59E0B", // Primary
+  600: "#D97706",
+  700: "#B45309",
+  800: "#92400E",
+  900: "#78350F",
+};
+
+// Neutral: Gray (Cool/Slate mix for polished look, or Warm Gray for harmony)
+const Neutral = {
+  white: "#FFFFFF",
+  black: "#000000",
+  50: "#FAFAFA",
+  100: "#F4F4F5",
+  200: "#E4E4E7",
+  300: "#D4D4D8",
+  400: "#A1A1AA",
+  500: "#71717A",
+  600: "#52525B",
+  700: "#3F3F46",
+  800: "#27272A",
+  900: "#18181B",
+};
+
+const tintColorLight = Amber[500];
+const tintColorDark = Amber[300];
 
 // --- 1. Spacing ---
 export const Spacing = {
@@ -24,12 +56,23 @@ export const BorderRadius = {
 
 // --- 3. Typography ---
 export const Typography = {
+  families: {
+    sans: "Inter_400Regular",
+    serif: "serif",
+    mono: "monospace",
+    heading: "Poppins_600SemiBold",
+    headingBold: "Poppins_700Bold",
+    body: "Inter_400Regular",
+    bodyMedium: "Inter_500Medium",
+  },
   sizes: {
     xs: 12,
     s: 14,
     m: 16,
     l: 20,
     xl: 24,
+    xxl: 32,
+    xxxl: 40,
   },
   weights: {
     regular: "400" as const,
@@ -63,104 +106,70 @@ function createShadow(
 
 export const Shadows = {
   light: {
-    s: createShadow(2, "#000", 0.1, 3),
-    m: createShadow(4, "#000", 0.15, 6),
-    l: createShadow(8, "#000", 0.2, 12),
+    s: createShadow(2, Neutral[900], 0.05, 3),
+    m: createShadow(4, Neutral[900], 0.1, 6),
+    l: createShadow(8, Neutral[900], 0.15, 12),
   },
   dark: {
-    s: createShadow(2, "#FFF", 0.1, 3),
-    m: createShadow(4, "#000", 0.3, 6), // Dark mode shadows are tricky, usually need darker background
-    l: createShadow(8, "#000", 0.4, 12),
+    s: createShadow(2, "#000", 0.3, 3),
+    m: createShadow(4, "#000", 0.5, 6),
+    l: createShadow(8, "#000", 0.7, 12),
   },
 };
 
+// Strict Palette: Shades of Amber, Black, and Gray only.
 export const ChartColors = [
-  "#3B82F6", // Blue
-  "#10B981", // Emerald
-  "#F59E0B", // Amber
-  "#EF4444", // Red
-  "#8B5CF6", // Violet
-  "#EC4899", // Pink
-  "#6366F1", // Indigo
-  "#14B8A6", // Teal
+  Amber[500], // Primary
+  Neutral[800], // Dark Gray
+  Amber[300], // Light Amber
+  Neutral[500], // Medium Gray
+  Amber[700], // Dark Amber
+  Neutral[300], // Light Gray
+  Amber[400],
+  Neutral[900],
 ];
-
-const BaseColors = {
-  neutral: {
-    white: "#FFFFFF",
-    black: "#000000",
-    gray50: "#F9FAFB",
-    gray100: "#F3F4F6",
-    gray200: "#E5E7EB",
-    gray300: "#D1D5DB",
-    gray400: "#9CA3AF",
-    gray500: "#6B7280",
-    gray600: "#4B5563",
-    gray700: "#374151",
-    gray800: "#1F2937",
-    gray900: "#111827",
-  },
-  brand: {
-    primary: tintColorLight,
-    primaryDark: tintColorDark,
-  },
-};
 
 export const Colors = {
   light: {
-    text: BaseColors.neutral.gray900,
-    textSecondary: BaseColors.neutral.gray500,
-    background: BaseColors.neutral.gray50,
-    card: BaseColors.neutral.white,
+    text: Neutral[900],
+    textSecondary: Neutral[500],
+    background: Neutral[50], // Very light gray, almost white
+    card: Neutral.white,
     tint: tintColorLight,
-    icon: BaseColors.neutral.gray400,
-    border: BaseColors.neutral.gray200,
-    tabIconDefault: BaseColors.neutral.gray400,
+    icon: Neutral[400],
+    border: Neutral[200],
+    tabIconDefault: Neutral[300],
     tabIconSelected: tintColorLight,
     chartPalette: ChartColors,
-    primary: BaseColors.brand.primary,
-    success: "#10B981",
-    error: "#EF4444",
+    primary: Amber[500],
+    success: Amber[600],
+    error: Neutral[900],
+    // Semantic Cards
+    card1: { bg: Amber[50], fg: Amber[600] },
+    card2: { bg: Neutral[100], fg: Neutral[900] },
+    card3: { bg: Neutral.white, fg: Neutral[800] },
+    card4: { bg: Amber[100], fg: Amber[700] },
   },
   dark: {
-    text: BaseColors.neutral.gray50,
-    textSecondary: BaseColors.neutral.gray400,
-    background: BaseColors.neutral.gray900,
-    card: BaseColors.neutral.gray800,
+    text: Neutral[50],
+    textSecondary: Neutral[400],
+    background: Neutral[900],
+    card: Neutral[800],
     tint: tintColorDark,
-    icon: BaseColors.neutral.gray400,
-    border: BaseColors.neutral.gray700,
-    tabIconDefault: BaseColors.neutral.gray400,
+    icon: Neutral[500],
+    border: Neutral[700],
+    tabIconDefault: Neutral[600],
     tabIconSelected: tintColorDark,
     chartPalette: ChartColors,
-    primary: BaseColors.brand.primaryDark,
-    success: "#34D399",
-    error: "#F87171",
+    primary: Amber[300],
+    success: Amber[400],
+    error: Neutral[50],
+    // Semantic Cards
+    card1: { bg: Amber[900], fg: Amber[200] },
+    card2: { bg: Neutral[700], fg: Neutral[100] },
+    card3: { bg: Neutral[800], fg: Neutral[200] },
+    card4: { bg: Amber[800], fg: Amber[100] },
   },
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: "system-ui",
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: "ui-serif",
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: "ui-rounded",
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: "ui-monospace",
-  },
-  default: {
-    sans: "normal",
-    serif: "serif",
-    rounded: "normal",
-    mono: "monospace",
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded:
-      "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+
