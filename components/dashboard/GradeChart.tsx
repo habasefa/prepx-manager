@@ -29,11 +29,24 @@ export function GradeChart({ data }: GradeChartProps) {
     );
   }
 
+  const extendedPalette = [
+    "#F59E0B", // Amber 500
+    "#78716C", // Stone 500
+    "#3B82F6", // Blue 500
+    "#10B981", // Emerald 500
+    "#EF4444", // Red 500
+    "#8B5CF6", // Violet 500
+    "#EC4899", // Pink 500
+    "#6366F1", // Indigo 500
+    "#14B8A6", // Teal 500
+    "#F97316", // Orange 500
+  ];
+
   const chartData = data.map((item, index) => {
     const total = item.students + item.subscribers;
     return {
       value: total,
-      color: theme.chartPalette[index % theme.chartPalette.length],
+      color: extendedPalette[index % extendedPalette.length],
     };
   });
 
@@ -49,7 +62,7 @@ export function GradeChart({ data }: GradeChartProps) {
                   styles.dot,
                   {
                     backgroundColor:
-                      theme.chartPalette[index % theme.chartPalette.length],
+                      extendedPalette[index % extendedPalette.length],
                   },
                 ]}
               />

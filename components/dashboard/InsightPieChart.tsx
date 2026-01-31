@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/themed-text";
-import { Colors } from "@/constants/theme";
+import { Colors, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { RegionKpiOut } from "@/services/analytics.service";
 import React from "react";
@@ -30,12 +30,25 @@ export function InsightPieChart({ data, title }: InsightPieChartProps) {
     );
   }
 
+  const extendedPalette = [
+    "#F59E0B", // Amber 500
+    "#78716C", // Stone 500
+    "#3B82F6", // Blue 500
+    "#10B981", // Emerald 500
+    "#EF4444", // Red 500
+    "#8B5CF6", // Violet 500
+    "#6366F1", // Indigo 500
+    "#EC4899", // Pink 500
+    "#14B8A6", // Teal 500
+    "#F97316", // Orange 500
+  ];
+
   const chartData = data.map((item, index) => {
     const total = item.students + item.subscribers;
     return {
       value: total,
       text: "",
-      color: theme.chartPalette[index % theme.chartPalette.length],
+      color: extendedPalette[index % extendedPalette.length],
     };
   });
 
@@ -51,7 +64,7 @@ export function InsightPieChart({ data, title }: InsightPieChartProps) {
                   styles.dot,
                   {
                     backgroundColor:
-                      theme.chartPalette[index % theme.chartPalette.length],
+                      extendedPalette[index % extendedPalette.length],
                   },
                 ]}
               />
@@ -133,9 +146,9 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   title: {
+    fontFamily: Typography.families.headingBold,
     marginBottom: 24,
     fontSize: 18,
-    fontWeight: "bold",
   },
   chartRow: {
     flexDirection: "row",
@@ -158,6 +171,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   legendText: {
+    fontFamily: Typography.families.body,
     fontSize: 12,
   },
 });

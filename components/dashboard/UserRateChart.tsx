@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/themed-text";
-import { Colors } from "@/constants/theme";
+import { Colors, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { DailyKpiOut } from "@/services/analytics.service";
 import React from "react";
@@ -40,8 +40,8 @@ export function UserRateChart({ data }: UserRateChartProps) {
     label: item.date.split("-").slice(1).join("/"),
   }));
 
-  const color1 = theme.chartPalette[2]; // Amber
-  const color2 = theme.chartPalette[0]; // Blue
+  const color1 = theme.primary; // Amber
+  const color2 = theme.text; // Black/Dark Gray for high contrast
 
   return (
     <View
@@ -167,9 +167,9 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   title: {
+    fontFamily: Typography.families.headingBold,
     marginBottom: 16,
     fontSize: 18,
-    fontWeight: "bold",
   },
   legend: {
     flexDirection: "row",
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   legendText: {
+    fontFamily: Typography.families.bodyMedium,
     fontSize: 12,
-    fontWeight: "500",
   },
 });

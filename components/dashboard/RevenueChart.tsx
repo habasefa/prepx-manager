@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/themed-text";
-import { Colors } from "@/constants/theme";
+import { Colors, Typography } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { MonthlyRevenueOut } from "@/services/analytics.service";
 import React from "react";
@@ -49,7 +49,8 @@ export function RevenueChart({ data }: RevenueChartProps) {
   const chartData = data.map((item, index) => ({
     value: item.revenue,
     label: monthNames[item.month] || String(item.month),
-    frontColor: theme.chartPalette[index % theme.chartPalette.length],
+    frontColor: "#F97316", // Amber 500
+    gradientColor: "#FDBA74", // Amber 300
     topLabelComponent: () => (
       <ThemedText
         style={{ fontSize: 10, color: theme.textSecondary, marginBottom: 4 }}
@@ -71,10 +72,10 @@ export function RevenueChart({ data }: RevenueChartProps) {
           Monthly Revenue
         </ThemedText>
       </View>
-      <View style={{ overflow: "visible" }}>
+      <View style={{ overflow: "visible", alignItems: "center" }}>
         <BarChart
           data={chartData}
-          barWidth={22}
+          barWidth={28}
           spacing={24}
           roundedTop
           hideRules
@@ -87,11 +88,11 @@ export function RevenueChart({ data }: RevenueChartProps) {
             marginTop: 4,
           }}
           noOfSections={4}
-          width={screenWidth - 80} // Adjusted for padding
+          width={screenWidth - 88} // Adjusted for padding
           height={220}
           isAnimated
           showGradient
-          gradientColor={theme.card}
+          gradientColor={"#FDBA74"} // Amber 300
           scrollToEnd
           initialSpacing={10}
           endSpacing={10}
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
+    fontFamily: Typography.families.headingBold,
     fontSize: 18,
-    fontWeight: "bold",
   },
 });
